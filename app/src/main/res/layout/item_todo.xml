@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp">
+    <ImageView
+        android:id="@+id/img_todo"
+        android:layout_width="56dp"
+        android:layout_height="65dp"
+        android:src="@mipmap/ic_launcher_round"
+        tools:ignore="ContentDescription" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp">
+
+        <TextView
+            android:id="@+id/title_todo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Title Task Todo"/>
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/date_todo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date Task Todo"
+            />
+        <TextView
+            android:id="@+id/details_todo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Details Task Todo"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:gravity="end"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/progress_id"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#ccc"
+            android:text="progress"
+            tools:ignore="ButtonStyle" />
+    </LinearLayout>
+
+</LinearLayout>
