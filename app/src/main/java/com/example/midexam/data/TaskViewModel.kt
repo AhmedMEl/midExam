@@ -9,18 +9,29 @@ import kotlinx.coroutines.launch
 
 
 class TaskViewModel(application: Application) : AndroidViewModel(application)  {
-     val readAllData:LiveData<List<Task>>
+     val readToDoData:LiveData<List<Task>>
+    val readInProgressData:LiveData<List<Task>>
+    val readDoneData:LiveData<List<Task>>
+
     private val repository:TaskRepository
 
     init {
         val taskDao=TaskDatabase.getDatabase(application).taskDao()
         repository= TaskRepository(taskDao)
-        readAllData=repository.readAllDataTasks
+        readToDoData=repository.readToDoDataTasks
+        readInProgressData=repository.readInProgressDataTasks
+        readDoneData=repository.readDoneDataTasks
     }
 
     fun addTask(task: Task){
         viewModelScope.launch(Dispatchers.IO){
             repository.addTask(task)
+        }
+    }
+
+    fun updateTask(task: Task){
+        viewModelScope.launch(Dispatchers.IO){
+            repository.updateTask(task)
         }
     }
 

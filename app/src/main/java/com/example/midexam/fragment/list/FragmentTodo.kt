@@ -4,7 +4,7 @@ package com.example.midexam.fragment.list
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,25 +21,23 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class FragmentTodo : Fragment() {
+
     private lateinit var floatingActionButton: FloatingActionButton
-    private lateinit var mTaskViewModel: TaskViewModel
     private lateinit var taskRecyclerView: RecyclerView
-    private var adapter: ListAdapter? = ListAdapter()
+    private var adapter: ListAdapter? = ListAdapter(emptyList())
+    private val mTaskViewModel: TaskViewModel by lazy {
+        ViewModelProvider(this).get(TaskViewModel::class.java)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view=inflater.inflate(R.layout.todo_fragment,container,false)
-
         taskRecyclerView = view.findViewById(R.id.todo_recyclerView) as RecyclerView
         taskRecyclerView.layoutManager = LinearLayoutManager(context)
         taskRecyclerView.adapter = adapter
-        mTaskViewModel=ViewModelProvider(this).get(TaskViewModel::class.java)
-        mTaskViewModel.readAllData.observe(viewLifecycleOwner, Observer {task->
-            adapter?.setData(task)
-        }
-        )
 
         floatingActionButton = view.findViewById(R.id.floatingActionButton_id)
         floatingActionButton.setOnClickListener {
@@ -51,13 +49,9 @@ class FragmentTodo : Fragment() {
             val dateDoTo=view.findViewById<EditText>(R.id.edit_add_date)
             val btnAdd=view.findViewById<Button>(R.id.btn_add)
 
-            val titleT=titleDoTo.text.toString()
-            val detailsT=detailsDoTo.text.toString()
-            val dateT=dateDoTo.text.toString()
-
             btnAdd.setOnClickListener {
                 if (titleDoTo.text.isNotEmpty() && detailsDoTo.text.isNotEmpty() && dateDoTo.text.isNotEmpty()){
-                    val task=Task(0,titleT,detailsT,dateT,0)
+                    val task=Task(0,titleDoTo.text.toString(),titleDoTo.text.toString(),titleDoTo.text.toString(),0)
                     mTaskViewModel.addTask(task)
                     Toast.makeText(activity, "Add Task ", Toast.LENGTH_SHORT).show()
                     titleDoTo.text.clear()
@@ -78,41 +72,59 @@ class FragmentTodo : Fragment() {
         return view
     }
 
-    private inner class ListAdapter: RecyclerView.Adapter<ListAdapter.MyViewHolder>(){
-        private var taskList= emptyList<Task>()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        inner class MyViewHolder(itemView:View):RecyclerView.ViewHolder(itemView) {
-            private lateinit var task: Task
-            val titleTextView: TextView = itemView.findViewById(R.id.title_todo)
-            val detailsTextView: TextView = itemView.findViewById(R.id.date_todo)
-            val dateTextView: TextView = itemView.findViewById(R.id.details_todo)
-            fun bind(task: Task) {
-                this.task = task
-                    titleTextView.text = this.task.titleTask
-                    detailsTextView.text=this.task.detailsTask
-                    dateTextView.text = this.task.dateTask
-            }
-
-
+        mTaskViewModel.readToDoData.observe(
+            viewLifecycleOwner,
+            Observer {task->
+                task?.let {
+                    updateUI(task)
+                }
         }
+        )
+    }
+
+    private fun updateUI(task: List<Task>) {
+        adapter = ListAdapter(task)
+        taskRecyclerView.adapter = adapter
+    }
+
+    private inner class MyViewHolder(itemView:View):RecyclerView.ViewHolder(itemView) {
+
+        private lateinit var task: Task
+        val titleTextView: TextView = itemView.findViewById(R.id.title_todo)
+        val detailsTextView: TextView = itemView.findViewById(R.id.details_todo)
+        val dateTextView: TextView = itemView.findViewById(R.id.date_todo)
+
+        fun bind(task: Task) {
+            this.task = task
+            Log.d("elha", this.task.id.toString()+"...................")
+            titleTextView.text = this.task.titleTask
+            detailsTextView.text=this.task.detailsTask
+            dateTextView.text = this.task.dateTask
+        }
+    }
+
+    private inner class ListAdapter(var task: List<Task>) : RecyclerView.Adapter<MyViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
             val view = layoutInflater.inflate(R.layout.item_todo, parent, false)
             return MyViewHolder(view)
         }
 
+        override fun getItemCount() = task.size
+
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-                val currentItem=taskList[position]
-                holder.bind(currentItem)
+            val progressBtn: Button = holder.itemView.findViewById(R.id.progress_id)
+            val currentItem = task[position]
+            progressBtn.setOnClickListener {
+                val updateStateTask=Task(currentItem.id,currentItem.titleTask,currentItem.detailsTask,currentItem.dateTask,1)
+                mTaskViewModel.updateTask(updateStateTask)
+            }
+            holder.bind(currentItem)
 
-        }
 
-        override fun getItemCount(): Int {
-            return taskList.size
-        }
-        fun setData(task:List<Task>){
-            this.taskList=task
-            notifyDataSetChanged()
         }
     }
 
