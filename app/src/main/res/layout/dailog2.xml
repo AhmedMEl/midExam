@@ -5,14 +5,14 @@
     android:orientation="vertical"
     android:padding="16dp">
     <EditText
-        android:id="@+id/edit_add_title"
+        android:id="@+id/edit_update_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter title task"
         android:padding="10dp"
         android:layout_margin="5dp"/>
     <EditText
-        android:id="@+id/edit_add_details"
+        android:id="@+id/edit_update_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter details task"
@@ -24,29 +24,29 @@
         android:orientation="vertical"
         android:background="#ccf">
         <TextView
-            android:id="@+id/edit_add_date"
+            android:id="@+id/edit_update_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:layout_margin="5dp"/>
         <Button
-            android:id="@+id/add_date"
+            android:id="@+id/update_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ADD Finished date Task"/>
+            android:text="ADD date Finished Task"/>
 
     </LinearLayout>
 <!--    <EditText-->
-<!--        android:id="@+id/edit_add_date"-->
+<!--        android:id="@+id/edit_update_date"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="wrap_content"-->
 <!--        android:hint="Enter Date task"-->
 <!--        android:padding="10dp"-->
 <!--        android:layout_margin="5dp"/>-->
-        <Button
-            android:id="@+id/btn_add"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="ADD New Task"/>
+    <Button
+        android:id="@+id/btn_update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="update Task"/>
 
 </LinearLayout>

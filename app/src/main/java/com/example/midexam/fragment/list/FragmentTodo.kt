@@ -2,6 +2,7 @@ package com.example.midexam.fragment.list
 
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +19,8 @@ import com.example.midexam.R
 import com.example.midexam.data.Task
 import com.example.midexam.data.TaskViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class FragmentTodo : Fragment() {
@@ -46,17 +49,33 @@ class FragmentTodo : Fragment() {
             val view=layoutInflater.inflate(R.layout.dailog1,null)
             val titleDoTo=view.findViewById<EditText>(R.id.edit_add_title)
             val detailsDoTo=view.findViewById<EditText>(R.id.edit_add_details)
-            val dateDoTo=view.findViewById<EditText>(R.id.edit_add_date)
+            val dateDoTo=view.findViewById<TextView>(R.id.edit_add_date)
+            val btnAddDate=view.findViewById<Button>(R.id.add_date)
             val btnAdd=view.findViewById<Button>(R.id.btn_add)
+            btnAddDate.setOnClickListener {
+                var formate=SimpleDateFormat("dd MMM yyyy",Locale.US)
+                val now=Calendar.getInstance()
+                val datePicker=DatePickerDialog(requireContext(),DatePickerDialog.OnDateSetListener{
+                    view,year,month,dayOfMonth->
+                    val selectedDate=Calendar.getInstance()
+                    selectedDate.set(Calendar.YEAR,year)
+                    selectedDate.set(Calendar.MONTH,month)
+                    selectedDate.set(Calendar.DAY_OF_MONTH,dayOfMonth)
+                    val date=formate.format(selectedDate.time)
+                    dateDoTo.setText(date)
+                },
+                now.get(Calendar.YEAR),now.get(Calendar.MONTH),now.get(Calendar.DAY_OF_MONTH))
+                datePicker.show()
+            }
 
             btnAdd.setOnClickListener {
                 if (titleDoTo.text.isNotEmpty() && detailsDoTo.text.isNotEmpty() && dateDoTo.text.isNotEmpty()){
-                    val task=Task(0,titleDoTo.text.toString(),titleDoTo.text.toString(),titleDoTo.text.toString(),0)
+                    val task=Task(0,titleDoTo.text.toString(),detailsDoTo.text.toString(),dateDoTo.text.toString(),0)
                     mTaskViewModel.addTask(task)
                     Toast.makeText(activity, "Add Task ", Toast.LENGTH_SHORT).show()
                     titleDoTo.text.clear()
                     detailsDoTo.text.clear()
-                    dateDoTo.text.clear()
+//                    dateDoTo.text.clear()
 
                 }else{
                     Toast.makeText(requireContext(), "please fill field ", Toast.LENGTH_SHORT).show()
@@ -117,10 +136,71 @@ class FragmentTodo : Fragment() {
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             val progressBtn: Button = holder.itemView.findViewById(R.id.progress_id)
+            val updateBtn: FloatingActionButton = holder.itemView.findViewById(R.id.floating_update)
+            val deleteBtn: FloatingActionButton = holder.itemView.findViewById(R.id.floating_delete)
             val currentItem = task[position]
             progressBtn.setOnClickListener {
                 val updateStateTask=Task(currentItem.id,currentItem.titleTask,currentItem.detailsTask,currentItem.dateTask,1)
                 mTaskViewModel.updateTask(updateStateTask)
+            }
+
+            updateBtn.setOnClickListener {
+                val dailogUpdate=AlertDialog.Builder(activity)
+                val view=layoutInflater.inflate(R.layout.dailog2,null)
+                val titleDoToUpdate=view.findViewById<EditText>(R.id.edit_update_title)
+                val detailsDoToUpdate=view.findViewById<EditText>(R.id.edit_update_details)
+                val dateDoToUpdate=view.findViewById<TextView>(R.id.edit_update_date)
+                val btnUpdateDate=view.findViewById<Button>(R.id.update_date)
+                val btnUpdate=view.findViewById<Button>(R.id.btn_update)
+                btnUpdateDate.setOnClickListener {
+                    var formate=SimpleDateFormat("dd MMM yyyy",Locale.US)
+                    val now=Calendar.getInstance()
+                    val datePicker=DatePickerDialog(requireContext(),DatePickerDialog.OnDateSetListener{
+                            view,year,month,dayOfMonth->
+                        val selectedDate=Calendar.getInstance()
+                        selectedDate.set(Calendar.YEAR,year)
+                        selectedDate.set(Calendar.MONTH,month)
+                        selectedDate.set(Calendar.DAY_OF_MONTH,dayOfMonth)
+                        val date=formate.format(selectedDate.time)
+                        dateDoToUpdate.setText(date)
+                    },
+                        now.get(Calendar.YEAR),now.get(Calendar.MONTH),now.get(Calendar.DAY_OF_MONTH))
+                    datePicker.show()
+                }
+
+                titleDoToUpdate.setText(currentItem.titleTask)
+                detailsDoToUpdate.setText(currentItem.detailsTask)
+                dateDoToUpdate.setText(currentItem.dateTask)
+                btnUpdate.setOnClickListener {
+                    if (titleDoToUpdate.text.isNotEmpty() && detailsDoToUpdate.text.isNotEmpty() && dateDoToUpdate.text.isNotEmpty()){
+                        val taskUpdate=Task(currentItem.id,titleDoToUpdate.text.toString(),detailsDoToUpdate.text.toString(),dateDoToUpdate.text.toString(),currentItem.stateTask)
+                        mTaskViewModel.updateTask(taskUpdate)
+                        Toast.makeText(activity, "update Task ", Toast.LENGTH_SHORT).show()
+
+                    }else{
+                        Toast.makeText(requireContext(), "not update field ", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                dailogUpdate.setView(view)
+
+                dailogUpdate.setNegativeButton("Cancel"){ _: DialogInterface, _: Int->
+
+                }
+                dailogUpdate.show()
+            }
+
+            deleteBtn.setOnClickListener{
+                val builder=AlertDialog.Builder(activity)
+                builder.setNegativeButton("Yes"){ _: DialogInterface, _: Int->
+//                    mTaskViewModel.deleteTask(currentItem.id)
+                    Toast.makeText(activity, "delete Task ", Toast.LENGTH_SHORT).show()
+                }
+                builder.setNegativeButton("Cancel"){ _: DialogInterface, _: Int->
+
+                }
+                builder.setTitle("Deleted")
+                builder.setMessage("Are You Sure want to delete")
+                builder.create().show()
             }
             holder.bind(currentItem)
 
