@@ -4,6 +4,7 @@ package com.example.midexam.fragment.list
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.DialogInterface
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -139,6 +140,13 @@ class FragmentTodo : Fragment() {
             val updateBtn: FloatingActionButton = holder.itemView.findViewById(R.id.floating_update)
             val deleteBtn: FloatingActionButton = holder.itemView.findViewById(R.id.floating_delete)
             val currentItem = task[position]
+            val date = Calendar.getInstance()
+            val formate = SimpleDateFormat("dd MMM yyyy",Locale.US)
+            val currentDate=formate.format(date.time)
+            if (currentItem.dateTask==currentDate){
+                holder.itemView.setBackgroundColor(Color.parseColor("#CCF80404"));
+
+            }
             progressBtn.setOnClickListener {
                 val updateStateTask=Task(currentItem.id,currentItem.titleTask,currentItem.detailsTask,currentItem.dateTask,1)
                 mTaskViewModel.updateTask(updateStateTask)
@@ -153,8 +161,6 @@ class FragmentTodo : Fragment() {
                 val btnUpdateDate=view.findViewById<Button>(R.id.update_date)
                 val btnUpdate=view.findViewById<Button>(R.id.btn_update)
                 btnUpdateDate.setOnClickListener {
-                    var formate=SimpleDateFormat("dd MMM yyyy",Locale.US)
-                    val now=Calendar.getInstance()
                     val datePicker=DatePickerDialog(requireContext(),DatePickerDialog.OnDateSetListener{
                             view,year,month,dayOfMonth->
                         val selectedDate=Calendar.getInstance()
@@ -164,7 +170,7 @@ class FragmentTodo : Fragment() {
                         val date=formate.format(selectedDate.time)
                         dateDoToUpdate.setText(date)
                     },
-                        now.get(Calendar.YEAR),now.get(Calendar.MONTH),now.get(Calendar.DAY_OF_MONTH))
+                        date.get(Calendar.YEAR),date.get(Calendar.MONTH),date.get(Calendar.DAY_OF_MONTH))
                     datePicker.show()
                 }
 
@@ -191,8 +197,8 @@ class FragmentTodo : Fragment() {
 
             deleteBtn.setOnClickListener{
                 val builder=AlertDialog.Builder(activity)
-                builder.setNegativeButton("Yes"){ _: DialogInterface, _: Int->
-//                    mTaskViewModel.deleteTask(currentItem.id)
+                builder.setPositiveButton("Yes"){ _: DialogInterface, _: Int->
+                    mTaskViewModel.deleteTask(currentItem.id)
                     Toast.makeText(activity, "delete Task ", Toast.LENGTH_SHORT).show()
                 }
                 builder.setNegativeButton("Cancel"){ _: DialogInterface, _: Int->

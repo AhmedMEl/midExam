@@ -15,7 +15,7 @@ class TaskRepository(private var taskDao: TaskDao) {
         taskDao.updateTask(task)
     }
 
-    suspend fun deleteTask(task: Task){
+    suspend fun deleteTask(task: Int){
         taskDao.deleteTask(task)
     }
 }

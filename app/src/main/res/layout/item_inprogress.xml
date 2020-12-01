@@ -4,7 +4,9 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp">
+    android:padding="5dp"
+    android:background="#fff"
+    android:layout_margin="3dp">
     <ImageView
         android:id="@+id/img_inprogress"
         android:layout_width="56dp"
